@@ -37,3 +37,30 @@ def calProfileScr(bio, profilePicture):
 
     return score
 
+def calcTotalScore(
+    engagementRate,
+    followers,
+    creatorNiche,
+    creatorLocation,
+    bio,
+    profilePicture,
+    minFollowers,
+    maxFollowers,
+    campaignNiche,
+    campaignLocation
+):
+    engagementScore = calcEngageScore(engagementRate)
+    followerScore = calFollowerScr(followers, minFollowers, maxFollowers)
+    nicheScore = calNicheScr(creatorNiche, campaignNiche)
+    locationScore = calcLocationScr(creatorLocation, campaignLocation)
+    profileScore = calProfileScr(bio, profilePicture)
+
+    totalScore = (
+        engagementScore
+        + followerScore
+        + nicheScore
+        + locationScore
+        + profileScore
+    )
+
+    return totalScore
