@@ -26,5 +26,5 @@ creators["score"] = creators.apply(
     ),
     axis=1
 )
-
-print(creators[["name", "score"]])
+rankedCreators=creators.sort_values(by='score',ascending=False)
+print(rankedCreators[['name','score']])
