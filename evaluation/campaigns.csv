@@ -1,5 +1,5 @@
-campaign_id,campaign_name,min_followers,max_followers,niche,location
-1,Mumbai Fashion Campaign,50000,200000,Fashion,Mumbai
-2,Bangalore Fitness Campaign,40000,180000,Fitness,Bangalore
-3,Delhi Beauty Campaign,100000,250000,Beauty,Delhi
-4,Mumbai Technology Campaign,50000,150000,Technology,Mumbai
+campaign_name,min_followers,max_followers,minimum_engagement_rate,niche,location
+Mumbai Fashion Campaign,50000,200000,3.5,Fashion,Mumbai
+Bangalore Fitness Campaign,40000,180000,4.0,Fitness,Bangalore
+Delhi Beauty Campaign,100000,250000,3.0,Beauty,Delhi
+Mumbai Technology Campaign,50000,150000,2.5,Technology,Mumbai

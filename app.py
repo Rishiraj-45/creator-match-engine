@@ -27,7 +27,13 @@ maxFollowers = st.number_input(
     value=200000,
     step=10000
 )
-
+minimumEngagementRate = st.number_input(
+    "Minimum Engagement Rate (%)",
+    min_value=0.0,
+    max_value=100.0,
+    value=3.0,
+    step=0.1
+)
 campaignNiche = st.selectbox(
     "Campaign Niche",
     ["Fashion", "Fitness", "Beauty", "Technology", "Gaming"]
