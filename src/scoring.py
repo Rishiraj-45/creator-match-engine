@@ -1,3 +1,33 @@
+import pandas as pd
+
+def getNicheBenchmark(creatorNiche, benchmarks):
+    matchingNiche = benchmarks[
+        benchmarks["niche"].str.lower() == creatorNiche.lower()
+    ]
+
+    if matchingNiche.empty:
+        return 3.0
+
+    return matchingNiche.iloc[0]["average_engagement_rate"]
+def calcEngagementScore(
+    engagementRate,
+    creatorNiche,
+    minimumEngagementRate,
+    benchmarks
+):
+    nicheBenchmark = getNicheBenchmark(creatorNiche, benchmarks)
+
+    requiredEngagement = max(
+        nicheBenchmark,
+        minimumEngagementRate
+    )
+
+    if engagementRate >= requiredEngagement:
+        return 40.0
+
+    score = (engagementRate / requiredEngagement) * 40
+
+    return float(round(max(0.0, score), 2))
 def calcEngageScore(engagRate):
     if engagRate>=6:
         return 40
@@ -8,34 +38,132 @@ def calcEngageScore(engagRate):
     else:
         return 12
 
-def calFollowerScr(followers,minFollowers,maxFollowers):
-    if followers>=minFollowers and followers<=maxFollowers:
-        return 20
+def calFollowerScr(followers, minFollowers, maxFollowers):
+    if followers < minFollowers or followers > maxFollowers:
+        return 0.0
+
+    midpoint = (minFollowers + maxFollowers) / 2
+    halfRange = (maxFollowers - minFollowers) / 2
+
+    if followers <= midpoint:
+        distanceFromMidpoint = midpoint - followers
     else:
-        return 0
+        distanceFromMidpoint = followers - midpoint
+
+    score = 20 - (distanceFromMidpoint / halfRange) * 10
+
+    return float(round(score, 2))
 
 def calNicheScr(creatorNiche, campaignNiche):
-    if creatorNiche.lower() == campaignNiche.lower():
-        return 20
-    else:
-        return 0
+    creatorNiche = creatorNiche.lower()
+    campaignNiche = campaignNiche.lower()
+
+    if creatorNiche == campaignNiche:
+        return 20.0
+
+    relatedNiches = {
+        "fashion": ["beauty", "fitness"],
+        "beauty": ["fashion"],
+        "fitness": ["fashion"],
+        "technology": ["gaming"],
+        "gaming": ["technology"],
+        "food": []
+    }
+
+    if creatorNiche in relatedNiches.get(campaignNiche, []):
+        return 10.0
+
+    return 0.0
 
 def calcLocationScr(creatorLocation, campaignLocation):
-    if creatorLocation.lower() == campaignLocation.lower():
-        return 10
-    else:
-        return 0
+    creatorLocation = creatorLocation.lower()
+    campaignLocation = campaignLocation.lower()
 
-def calProfileScr(bio, profilePicture):
-    score = 0
+    if creatorLocation == campaignLocation:
+        return 10.0
 
-    if bio.lower() == "yes":
-        score += 5
+    regions = {
+        "west": ["mumbai", "pune", "ahmedabad"],
+        "north": ["delhi", "jaipur", "chandigarh"],
+        "south": ["bangalore", "chennai", "hyderabad"],
+        "east": ["kolkata", "bhubaneswar", "guwahati"]
+    }
 
-    if profilePicture.lower() == "yes":
-        score += 5
+    creatorRegion = None
+    campaignRegion = None
 
-    return score
+    for region, cities in regions.items():
+        if creatorLocation in cities:
+            creatorRegion = region
+
+        if campaignLocation in cities:
+            campaignRegion = region
+
+    if creatorRegion is not None and creatorRegion == campaignRegion:
+        return 5.0
+
+    return 0.0
+
+def calProfileScr(bio, category, contactEmail):
+    completedFields = 0
+
+    if str(bio).lower() == "yes":
+        completedFields += 1
+
+    if str(category).strip() != "":
+        completedFields += 1
+
+    if str(contactEmail).lower() == "yes":
+        completedFields += 1
+
+    score = (completedFields / 3) * 10
+
+    return float(round(score, 2))
+
+def scoreCreator(campaign, creator, benchmarks):
+    engagementScore = calcEngagementScore(
+        creator["engagement_rate"],
+        creator["niche"],
+        campaign["minimum_engagement_rate"],
+        benchmarks
+    )
+
+    followerScore = calFollowerScr(
+        creator["followers"],
+        campaign["min_followers"],
+        campaign["max_followers"]
+    )
+
+    nicheScore = calNicheScr(
+        creator["niche"],
+        campaign["niche"]
+    )
+
+    locationScore = calcLocationScr(
+        creator["location"],
+        campaign["location"]
+    )
+
+    completenessScore = calProfileScr(
+        creator["bio"],
+        creator["category"],
+        creator["contact_email"]
+    )
+
+    breakdown = {
+        "engagementRate": engagementScore,
+        "followerFit": followerScore,
+        "nicheMatch": nicheScore,
+        "location": locationScore,
+        "completeness": completenessScore
+    }
+
+    totalScore = sum(breakdown.values())
+
+    return {
+        "total": float(round(totalScore, 2)),
+        "breakdown": breakdown
+    }
 
 def calcTotalScore(
     engagementRate,
