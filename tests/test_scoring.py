@@ -78,6 +78,11 @@ def test_follower_scoring_cases():
     assert calFollowerScr(40000, 50000, 150000) == 0.0
     assert calFollowerScr(160000, 50000, 150000) == 0.0
 
+def test_follower_range_with_same_min_and_max():
+    assert calFollowerScr(100000, 100000, 100000) == 20.0
+    assert calFollowerScr(90000, 100000, 100000) == 0.0
+
+
 
 def test_niche_scoring_cases():
     assert calNicheScr("Fashion", "Fashion") == 20.0

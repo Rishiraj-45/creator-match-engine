@@ -41,6 +41,9 @@ def calcEngageScore(engagRate):
 def calFollowerScr(followers, minFollowers, maxFollowers):
     if followers < minFollowers or followers > maxFollowers:
         return 0.0
+    if minFollowers == maxFollowers:
+     return 20.0
+
 
     midpoint = (minFollowers + maxFollowers) / 2
     halfRange = (maxFollowers - minFollowers) / 2
